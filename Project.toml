@@ -1,4 +1,4 @@
-name = "ADelemtree"
+name = "SparsityTracing"
 uuid = "06eadbd4-12ad-4cbc-ab6e-10f8370940a5"
 authors = ["Stuart Daines <stuart.daines@gmail.com>"]
 version = "0.1.0"

@@ -1,4 +1,4 @@
-import ADelemtree; const AD = ADelemtree # short name for convenience
+import SparsityTracing; const AD = SparsityTracing # short name for convenience
 
 using SparseArrays
 using LinearAlgebra  # for I
@@ -8,7 +8,7 @@ using Test
 
 
 
-@testset "ADelem" begin
+@testset "SparsityTracing" begin
 
     @testset "createviewassign" begin
 

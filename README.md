@@ -1,4 +1,4 @@
-# ADelemtree.jl
+# SparsityTracing.jl
 
 Automatic Jacobian sparsity detection using minimal scalar tracing and autodifferentiation.
 
@@ -7,12 +7,12 @@ Automatic Jacobian sparsity detection using minimal scalar tracing and autodiffe
 The package is not yet registered, so add it using:
 
 ```julia
-julia> ] add https://github.com/sjdaines/ADelemtree.jl
+julia> ] add https://github.com/PALEOmodel/SparsityTracing.jl
 ```
 
 ## Example
 ```julia
-julia> import ADelemtree as AD
+julia> import SparsityTracing as AD
 
 julia> function rober(du,u,p)
                    y₁,y₂,y₃ = u
@@ -47,7 +47,7 @@ julia> Jad = AD.jacobian(du_ad, length(du_ad))
 
 ## Implementation
 
-The algorithm is essentially that of SparsLinC described in Bischof etal (1996), except with a simpler but less efficient data structure. Implements a scalar type `ADelemtree.ADval{T<:Real}` that holds a value and a binary tree of scalar derivatives including the element indices used as leaf nodes. The tree is initialised to a Vector of leaf nodes by `ADelemtree.create_advec`.  It is populated with derivatives calculated by `DiffRules` when a Julia function is called (eg a function `y = f(x)` calculating the RHS of an ODE). `ADelemtree.jacobian` then walks the tree and calculates the Jacobian as a sparse matrix.  This provides a robust way of detecting Jacobian sparsity (and for test purposes only, a very slow way of calculating the actual derivative).  The sparsity pattern may then be used to generate matrix colouring for a fast AD package eg `SparseDiffTools`. 
+The algorithm is essentially that of SparsLinC described in Bischof etal (1996), except with a simpler but less efficient data structure. Implements a scalar type `SparsityTracing.ADval{T<:Real}` that holds a value and a binary tree of scalar derivatives including the element indices used as leaf nodes. The tree is initialised to a Vector of leaf nodes by `SparsityTracing.create_advec`.  It is populated with derivatives calculated by `DiffRules` when a Julia function is called (eg a function `y = f(x)` calculating the RHS of an ODE). `SparsityTracing.jacobian` then walks the tree and calculates the Jacobian as a sparse matrix.  This provides a robust way of detecting Jacobian sparsity (and for test purposes only, a very slow way of calculating the actual derivative).  The sparsity pattern may then be used to generate matrix colouring for a fast AD package eg `SparseDiffTools`. 
 
 Time taken increases approximately linearly with the number of scalar operations. Speed is approx 10 M scalar op/s (on a ~4Ghz laptop core) so 100 - 1000x slower than `y = f(x)` with primitive types (as each scalar operation generates a memory allocation to add a tree node).  This is however still ~10 - 20x faster than tracing with Symbolics.jl     
 

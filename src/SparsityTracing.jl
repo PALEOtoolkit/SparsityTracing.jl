@@ -18,11 +18,11 @@ where x and y are vectors.
     for examples of definitions required.
  
 # Example usage:
-    x_ad = ADelemtree.create_advec(x)           # x_ad takes values from x,  derivatives set to identity
+    x_ad = SparsityTracing.create_advec(x)           # x_ad takes values from x,  derivatives set to identity
     y_ad = f(x_ad)                              # tree of derivative information is accumulated into each element of y_ad
-    jac = ADelemtree.jacobian(y_ad, length(x))  # walk trees and generate sparse Jacobian
+    jac = SparsityTracing.jacobian(y_ad, length(x))  # walk trees and generate sparse Jacobian
  """
-module ADelemtree
+module SparsityTracing
 
 
 using SparseArrays
@@ -54,21 +54,21 @@ Usual case for an independent vector variable `x` (eg to use as input with `y = 
  
 # Examples:
  ```jldoctest; setup = :(import PALEOmodel)
-julia> v_ad = PALEOmodel.ADelemtree.create_advec([1.0, 5.0])
-2-element Array{PALEOmodel.ADelemtree.ADval{Float64,2},1}:
- PALEOmodel.ADelemtree.ADval{Float64,2}(1.0, <derivnode>)
- PALEOmodel.ADelemtree.ADval{Float64,2}(5.0, <derivnode>)
+julia> v_ad = PALEOmodel.SparsityTracing.create_advec([1.0, 5.0])
+2-element Array{PALEOmodel.SparsityTracing.ADval{Float64,2},1}:
+ PALEOmodel.SparsityTracing.ADval{Float64,2}(1.0, <derivnode>)
+ PALEOmodel.SparsityTracing.ADval{Float64,2}(5.0, <derivnode>)
 
 julia> x_ad, y_ad = v_ad;
 
 julia> x_ad        # deriv is sparse vector
-PALEOmodel.ADelemtree.ADval{Float64}
+PALEOmodel.SparsityTracing.ADval{Float64}
   val=1.0
   deriv:
   [1]  =  1.0
    
 julia> y_ad       # deriv is sparse vector
-PALEOmodel.ADelemtree.ADval{Float64}
+PALEOmodel.SparsityTracing.ADval{Float64}
   val=5.0
   deriv:
   [2]  =  1.0  
@@ -79,7 +79,7 @@ julia> PALEOmodel.AD.jacobian(v_ad, 2)  # sparse 2x2 identity matrix.
   [2, 2]  =  1.0
 
 julia> z_ad = x_ad*y_ad^2    # d(x*y^2)/dx = y^2 = 5^2 = 25,  d(x*y^2)/dy = 2*x*y = 2*1*5 = 10
-PALEOmodel.ADelemtree.ADval{Float64}
+PALEOmodel.SparsityTracing.ADval{Float64}
   val=25.0
   deriv:
   [1]  =  25.0
@@ -172,7 +172,7 @@ function jacobian(advec::Vector{ADval{T}}, N) where {T}
 
     Nvar = length(advec)
 
-    @info "ADelemtree.jacobian ($Nvar, $N)"
+    @info "SparsityTracing.jacobian ($Nvar, $N)"
     
     # define arrays for sparse matrix creation
     I = Vector{Int64}()
