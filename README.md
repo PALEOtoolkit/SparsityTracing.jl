@@ -2,12 +2,19 @@
 
 Automatic Jacobian sparsity detection using minimal scalar tracing and autodifferentiation.
 
+## Limitations and alternatives
+
+The detected sparsity pattern is that for the code path that is followed with the specified variable and parameter values.
+Any conditional logic that generates different code paths which result in different sparsity patterns is therefore not handled. As a workaround, either choose values that generate the least sparsity, or add `0.0*an_omitted_variable` to conditional paths (relying on the fact that `SparsityTracing` includes structural zeros in the generated Jacobian), or call multiple times and merge the sparsity patterns (ie add the sparse Jacobians).
+ 
+**This package should be considered an interim solution until [Symbolics.jl](https://github.com/JuliaSymbolics/Symbolics.jl) Jacobian tracing is fully implemented.**  Currently `Symbolics v1.4.2` requires awkward workarounds for conditional logic (which will error), and is relatively slow (which may not be an issue for smaller models).  See https://github.com/JuliaSymbolics/Symbolics.jl/issues/326 for benchmark results showing that `SparsityTracing` is ~40x faster, and also demonstrating that the usage is very similar hence it is easy to just swap.
+
+The earlier [SparsityDetection.jl](https://github.com/SciML/SparsityDetection.jl) package is marked as deprecated.
+
 ## Installation
 
-The package is not yet registered, so add it using:
-
 ```julia
-julia> ] add https://github.com/PALEOmodel/SparsityTracing.jl
+julia> ] add SparsityTracing
 ```
 
 ## Example
@@ -47,9 +54,9 @@ julia> Jad = AD.jacobian(du_ad, length(du_ad))
 
 ## Implementation
 
-The algorithm is essentially that of SparsLinC described in Bischof etal (1996), except with a simpler but less efficient data structure. Implements a scalar type `SparsityTracing.ADval{T<:Real}` that holds a value and a binary tree of scalar derivatives including the element indices used as leaf nodes. The tree is initialised to a Vector of leaf nodes by `SparsityTracing.create_advec`.  It is populated with derivatives calculated by `DiffRules` when a Julia function is called (eg a function `y = f(x)` calculating the RHS of an ODE). `SparsityTracing.jacobian` then walks the tree and calculates the Jacobian as a sparse matrix.  This provides a robust way of detecting Jacobian sparsity (and for test purposes only, a very slow way of calculating the actual derivative).  The sparsity pattern may then be used to generate matrix colouring for a fast AD package eg `SparseDiffTools`. 
+The algorithm is essentially that of SparsLinC described in Bischof etal (1996), except with a simpler but less efficient data structure. Implements a scalar type `SparsityTracing.ADval{T<:Real}` that holds a value, and a binary tree of scalar derivatives including the element indices as leaf nodes. The tree is initialised to a `Vector` of leaf nodes by `SparsityTracing.create_advec`.  It is populated with derivatives calculated by [DiffRules.jl](https://github.com/JuliaDiff/DiffRules.jl) when a Julia function is called (eg a function `y = f(x)` calculating the RHS of an ODE). `SparsityTracing.jacobian` then walks the tree and calculates the Jacobian as a sparse matrix.  This provides a robust way of detecting Jacobian sparsity (and for test purposes only, a very slow way of calculating the actual derivative).  The sparsity pattern may then be used to generate matrix colouring for a fast AD package eg [SparseDiffTools.jl](https://github.com/JuliaDiff/SparseDiffTools.jl). 
 
-Time taken increases approximately linearly with the number of scalar operations. Speed is approx 10 M scalar op/s (on a ~4Ghz laptop core) so 100 - 1000x slower than `y = f(x)` with primitive types (as each scalar operation generates a memory allocation to add a tree node).  This is however still ~10 - 20x faster than tracing with Symbolics.jl     
+Time taken increases approximately linearly with the number of scalar operations. Speed is approx 10 M scalar op/s (on a ~4Ghz laptop core) so 100 - 1000x slower than `y = f(x)` with primitive types (as each scalar operation generates a memory allocation to add a tree node).
 
 # References
 
