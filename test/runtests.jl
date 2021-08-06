@@ -3,12 +3,14 @@ import SparsityTracing; const AD = SparsityTracing # short name for convenience
 using SparseArrays
 using LinearAlgebra  # for I
 
-using Test
+using Test, Documenter
 # using BenchmarkTools
 
 
 
 @testset "SparsityTracing" begin
+
+    doctest(SparsityTracing; manual=false)
 
     @testset "createviewassign" begin
 

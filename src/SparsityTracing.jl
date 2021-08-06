@@ -53,33 +53,33 @@ and `length(x)` derivatives initialised to identity (each element derivative 1 w
 Usual case for an independent vector variable `x` (eg to use as input with `y = f(x)`).
  
 # Examples:
- ```jldoctest; setup = :(import PALEOmodel)
-julia> v_ad = PALEOmodel.SparsityTracing.create_advec([1.0, 5.0])
-2-element Array{PALEOmodel.SparsityTracing.ADval{Float64,2},1}:
- PALEOmodel.SparsityTracing.ADval{Float64,2}(1.0, <derivnode>)
- PALEOmodel.SparsityTracing.ADval{Float64,2}(5.0, <derivnode>)
+ ```jldoctest; setup = :(import SparsityTracing)
+julia> v_ad = SparsityTracing.create_advec([1.0, 5.0])
+2-element Vector{SparsityTracing.ADval{Float64}}:
+ SparsityTracing.ADval{Float64}(1.0, <derivnode>)
+ SparsityTracing.ADval{Float64}(5.0, <derivnode>)
 
 julia> x_ad, y_ad = v_ad;
 
 julia> x_ad        # deriv is sparse vector
-PALEOmodel.SparsityTracing.ADval{Float64}
+SparsityTracing.ADval{Float64}
   val=1.0
   deriv:
   [1]  =  1.0
    
 julia> y_ad       # deriv is sparse vector
-PALEOmodel.SparsityTracing.ADval{Float64}
+SparsityTracing.ADval{Float64}
   val=5.0
   deriv:
   [2]  =  1.0  
 
-julia> PALEOmodel.AD.jacobian(v_ad, 2)  # sparse 2x2 identity matrix.
-2×2 SparseArrays.SparseMatrixCSC{Float64,Int64} with 2 stored entries:
-  [1, 1]  =  1.0    
-  [2, 2]  =  1.0
+julia> SparsityTracing.jacobian(v_ad, 2)  # sparse 2x2 identity matrix.
+2×2 SparseArrays.SparseMatrixCSC{Float64, Int64} with 2 stored entries:
+ 1.0   ⋅ 
+  ⋅   1.0
 
 julia> z_ad = x_ad*y_ad^2    # d(x*y^2)/dx = y^2 = 5^2 = 25,  d(x*y^2)/dy = 2*x*y = 2*1*5 = 10
-PALEOmodel.SparsityTracing.ADval{Float64}
+SparsityTracing.ADval{Float64}
   val=25.0
   deriv:
   [1]  =  25.0
@@ -172,7 +172,7 @@ function jacobian(advec::Vector{ADval{T}}, N) where {T}
 
     Nvar = length(advec)
 
-    @info "SparsityTracing.jacobian ($Nvar, $N)"
+    # @info "SparsityTracing.jacobian ($Nvar, $N)"
     
     # define arrays for sparse matrix creation
     I = Vector{Int64}()
