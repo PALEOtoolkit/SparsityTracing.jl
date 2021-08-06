@@ -106,10 +106,13 @@ end
 
 "create from a non-AD value, set derivatives to zero"
 ADval{T}(v) where {T} = ADval{T}(v, nothing)
+ADval{T}(v::ADval{T}) where {T} = v
 
 Base.convert(::Type{ADval{T}}, v) where {T} = ADval{T}(v)
 Base.convert(::Type{ADval{T}}, v::Number) where {T} = ADval{T}(v)
 Base.convert(::Type{ADval{T}}, d::ADval{T}) where {T} = d
+
+Base.promote_rule(::Type{T}, ::Type{ADval{T}} ) where {T} = ADval{T}
 
 "get value. NB: no automatic conversion to Float64 etc"
 value(d::ADval) = d.val
