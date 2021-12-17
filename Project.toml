@@ -1,7 +1,7 @@
 name = "SparsityTracing"
 uuid = "06eadbd4-12ad-4cbc-ab6e-10f8370940a5"
 authors = ["Stuart Daines <stuart.daines@gmail.com>"]
-version = "0.2.3"
+version = "0.2.4"
 
 [deps]
 DiffRules = "b552c78f-8df3-52c6-915a-8e097449b14b"
@@ -11,7 +11,7 @@ SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 [compat]
 DiffRules = "1"
 Documenter = "0.27"
-SpecialFunctions = "1"
+SpecialFunctions = "1, 2"
 julia = "1.6"
 
 [extras]
