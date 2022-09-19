@@ -353,12 +353,7 @@ gen_logical_rules()
 # TODO fixups #
 ###############
 # Errors Base.:^(d::ADval{T}, n::Integer) is ambiguous ? 
-# adding literal_pow apparently fixes this but might not be the right fix
-Base.literal_pow(::typeof(^), d::ADval{T}, ::Val{0}) where {T} = one(d)
-Base.literal_pow(::typeof(^), d::ADval{T}, ::Val{1}) where {T} = d
-Base.literal_pow(::typeof(^), d::ADval{T}, ::Val{2}) where {T} = d*d
-Base.literal_pow(::typeof(^), d::ADval{T}, ::Val{3}) where {T} = d*d*d
-Base.literal_pow(::typeof(^), d::ADval{T}, ::Val{4}) where {T} = d*d*d*d
 
+Base.:^(d::ADval{T}, p::Integer) where {T} = d^Float64(p)
 
 end
