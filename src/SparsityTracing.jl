@@ -65,12 +65,14 @@ julia> x_ad        # deriv is sparse vector
 SparsityTracing.ADval{Float64}
   val=1.0
   deriv:
+1-element SparseArrays.SparseVector{Float64, Int64} with 1 stored entry:
   [1]  =  1.0
    
 julia> y_ad       # deriv is sparse vector
 SparsityTracing.ADval{Float64}
   val=5.0
   deriv:
+2-element SparseArrays.SparseVector{Float64, Int64} with 1 stored entry:
   [2]  =  1.0  
 
 julia> SparsityTracing.jacobian(v_ad, 2)  # sparse 2x2 identity matrix.
@@ -82,6 +84,7 @@ julia> z_ad = x_ad*y_ad^2    # d(x*y^2)/dx = y^2 = 5^2 = 25,  d(x*y^2)/dy = 2*x*
 SparsityTracing.ADval{Float64}
   val=25.0
   deriv:
+2-element SparseArrays.SparseVector{Float64, Int64} with 2 stored entries:
   [1]  =  25.0
   [2]  =  10.0
 ```
