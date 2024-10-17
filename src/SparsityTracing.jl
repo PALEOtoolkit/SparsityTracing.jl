@@ -65,12 +65,14 @@ julia> x_ad        # deriv is sparse vector
 SparsityTracing.ADval{Float64}
   val=1.0
   deriv:
+1-element SparseArrays.SparseVector{Float64, Int64} with 1 stored entry:
   [1]  =  1.0
    
 julia> y_ad       # deriv is sparse vector
 SparsityTracing.ADval{Float64}
   val=5.0
   deriv:
+2-element SparseArrays.SparseVector{Float64, Int64} with 1 stored entry:
   [2]  =  1.0  
 
 julia> SparsityTracing.jacobian(v_ad, 2)  # sparse 2x2 identity matrix.
@@ -82,6 +84,7 @@ julia> z_ad = x_ad*y_ad^2    # d(x*y^2)/dx = y^2 = 5^2 = 25,  d(x*y^2)/dy = 2*x*
 SparsityTracing.ADval{Float64}
   val=25.0
   deriv:
+2-element SparseArrays.SparseVector{Float64, Int64} with 2 stored entries:
   [1]  =  25.0
   [2]  =  10.0
 ```
@@ -142,7 +145,8 @@ end
 function Base.show(io::IO, ::MIME"text/plain", d::ADval)
     println(io, typeof(d))
     println(io, "  val=", d.val)
-    println(io, "  deriv:\n", deriv(d))  
+    println(io, "  deriv:")
+    show(io, MIME"text/plain"(), deriv(d))  
 end
 
 ###################
@@ -279,8 +283,8 @@ end
 ##########################################
 
 "display DiffRules rules (diagnostic for development)"
-function list_diffrules(arity)
-    for key in DiffRules.diffrules()
+function list_diffrules(namespaces, arity)
+    for key in DiffRules.diffrules(;filter_modules=namespaces)
         if key[3] in arity
             println(key)
         end
@@ -323,16 +327,16 @@ function gen_logical_rule(op)
 end
 
 function gen_unary_rules(namespaces, excludeops)
-    for (ns, op, arity) in DiffRules.diffrules()
-        if ns in namespaces && arity == 1 && !(op in excludeops)
+    for (ns, op, arity) in DiffRules.diffrules(;filter_modules=namespaces)
+        if arity == 1 && !(op in excludeops)
             gen_unary_rule(ns, op)
         end
     end
 end
 
 function gen_binary_rules(namespaces, excludeops)
-    for (ns, op, arity) in DiffRules.diffrules()
-        if ns in namespaces && arity == 2 && !(op in excludeops)
+    for (ns, op, arity) in DiffRules.diffrules(;filter_modules=namespaces)
+        if arity == 2 && !(op in excludeops)
             gen_binary_rule(ns, op)
         end
     end
