@@ -143,7 +143,7 @@ function Base.show(io::IO, ::MIME"text/plain", d::ADval)
     println(io, typeof(d))
     println(io, "  val=", d.val)
     println(io, "  deriv:")
-    show(io, ::MIME"text/plain", deriv(d))  
+    show(io, MIME"text/plain", deriv(d))  
 end
 
 ###################
