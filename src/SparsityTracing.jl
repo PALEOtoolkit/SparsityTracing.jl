@@ -279,8 +279,8 @@ end
 ##########################################
 
 "display DiffRules rules (diagnostic for development)"
-function list_diffrules(arity)
-    for key in DiffRules.diffrules()
+function list_diffrules(namespaces, arity)
+    for key in DiffRules.diffrules(;filter_modules=namespaces)
         if key[3] in arity
             println(key)
         end
@@ -323,16 +323,16 @@ function gen_logical_rule(op)
 end
 
 function gen_unary_rules(namespaces, excludeops)
-    for (ns, op, arity) in DiffRules.diffrules()
-        if ns in namespaces && arity == 1 && !(op in excludeops)
+    for (ns, op, arity) in DiffRules.diffrules(;filter_modules=namespaces)
+        if arity == 1 && !(op in excludeops)
             gen_unary_rule(ns, op)
         end
     end
 end
 
 function gen_binary_rules(namespaces, excludeops)
-    for (ns, op, arity) in DiffRules.diffrules()
-        if ns in namespaces && arity == 2 && !(op in excludeops)
+    for (ns, op, arity) in DiffRules.diffrules(;filter_modules=namespaces)
+        if arity == 2 && !(op in excludeops)
             gen_binary_rule(ns, op)
         end
     end
